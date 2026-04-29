@@ -38,7 +38,7 @@ from visualization.plots import (
 # ============================================================
 
 if "language" not in st.session_state:
-    st.session_state.language = "zh"
+    st.session_state.language = "en"
 
 
 def toggle_language() -> None:
@@ -90,79 +90,26 @@ st.markdown(
     }
 
     /* ============================================================
-       Main app background
+       Main layout
     ============================================================ */
-    html,
-    body,
-    .stApp,
-    [data-testid="stAppViewContainer"],
-    [data-testid="stAppViewBlockContainer"],
-    [data-testid="stMain"],
-    [data-testid="stMainBlockContainer"] {
-        background: var(--bg-main) !important;
-        color: var(--text-main) !important;
-    }
-
     .block-container {
         padding-top: 2.4rem;
         padding-bottom: 2rem;
         max-width: 1600px;
-        background: var(--bg-main) !important;
-        color: var(--text-main) !important;
     }
 
-    /* ============================================================
-       Top Streamlit header / toolbar / decoration
-    ============================================================ */
-    [data-testid="stHeader"] {
-        background: rgba(14,17,23,0.96) !important;
-        color: var(--text-main) !important;
-        border-bottom: 1px solid rgba(255,255,255,0.04) !important;
-    }
-
-    [data-testid="stToolbar"] {
-        background: rgba(14,17,23,0.96) !important;
-        color: var(--text-main) !important;
-    }
-
-    [data-testid="stDecoration"] {
-        background: transparent !important;
-    }
-
-    header {
-        background: rgba(14,17,23,0.96) !important;
-        color: var(--text-main) !important;
-    }
-
-    header button,
-    header svg,
-    [data-testid="stToolbar"] button,
-    [data-testid="stToolbar"] svg {
-        color: var(--text-soft) !important;
-        fill: var(--text-soft) !important;
-    }
-
-    /* ============================================================
+        /* ============================================================
        Sidebar
     ============================================================ */
     [data-testid="stSidebar"] {
         border-right: 1px solid rgba(255,255,255,0.10);
         overflow-y: auto;
-        background: var(--bg-sidebar) !important;
-        color: var(--text-main) !important;
     }
 
     [data-testid="stSidebarContent"] {
         overflow-y: auto;
         max-height: 100vh;
         padding-bottom: 2rem;
-        background: var(--bg-sidebar) !important;
-        color: var(--text-main) !important;
-    }
-
-    [data-testid="stSidebarUserContent"] {
-        background: var(--bg-sidebar) !important;
-        color: var(--text-main) !important;
     }
 
     /* ============================================================
@@ -170,29 +117,6 @@ st.markdown(
     ============================================================ */
     h1, h2, h3, h4, h5, h6 {
         color: var(--text-main) !important;
-    }
-
-    p, span, div, label {
-        color: inherit;
-    }
-
-    [data-testid="stMarkdownContainer"],
-    [data-testid="stMarkdownContainer"] p,
-    [data-testid="stMarkdownContainer"] div,
-    [data-testid="stMarkdownContainer"] span,
-    [data-testid="stCaptionContainer"],
-    [data-testid="stCaptionContainer"] p {
-        color: var(--text-soft) !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"],
-    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
-    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] div,
-    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] span,
-    [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] p,
-    [data-testid="stSidebar"] span {
-        color: var(--text-soft) !important;
     }
 
     /* ============================================================
@@ -342,31 +266,30 @@ st.markdown(
     }
 
     /* ============================================================
-       Tooltip / help icon
+       Help icon
+       Keep the question-mark icon visible without overriding tooltip popup.
     ============================================================ */
     [data-testid="stTooltipHoverTarget"] svg,
     [data-testid="stTooltipIcon"] svg {
-        color: rgba(0,194,255,0.85) !important;
-        fill: rgba(0,194,255,0.85) !important;
+        color: #00AEEF !important;
+        fill: #00AEEF !important;
+        opacity: 1 !important;
     }
 
-    [data-baseweb="tooltip"],
-    [role="tooltip"] {
-        background: var(--bg-tooltip) !important;
-        color: var(--text-main) !important;
-        border: 1px solid rgba(0,194,255,0.25) !important;
-        border-radius: 12px !important;
-        box-shadow: 0 12px 30px rgba(0,0,0,0.35) !important;
+    [data-testid="stTooltipHoverTarget"] svg path,
+    [data-testid="stTooltipIcon"] svg path {
+        fill: #00AEEF !important;
+        stroke: #00AEEF !important;
     }
 
-    [data-baseweb="tooltip"] div,
-    [data-baseweb="tooltip"] p,
-    [data-baseweb="tooltip"] span,
-    [role="tooltip"] div,
-    [role="tooltip"] p,
-    [role="tooltip"] span {
-        color: var(--text-main) !important;
-        background: transparent !important;
+    [data-testid="stTooltipHoverTarget"]:hover svg,
+    [data-testid="stTooltipIcon"]:hover svg,
+    [data-testid="stTooltipHoverTarget"]:hover svg path,
+    [data-testid="stTooltipIcon"]:hover svg path {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+        stroke: #FFFFFF !important;
+        opacity: 1 !important;
     }
 
     /* ============================================================
@@ -382,19 +305,6 @@ st.markdown(
     [data-testid="stSlider"] [role="slider"] {
         background-color: #00C2FF !important;
         border-color: #00C2FF !important;
-    }
-
-    /* ============================================================
-       Checkbox
-    ============================================================ */
-    [data-testid="stCheckbox"] label,
-    [data-testid="stCheckbox"] p,
-    [data-testid="stCheckbox"] span {
-        color: var(--text-soft) !important;
-    }
-
-    [data-testid="stCheckbox"] div {
-        color: var(--text-soft) !important;
     }
 
     /* ============================================================
@@ -428,28 +338,6 @@ st.markdown(
     }
 
     /* ============================================================
-       Alert / info / warning / success
-    ============================================================ */
-    [data-testid="stAlert"] {
-        background: rgba(255,255,255,0.055) !important;
-        color: var(--text-main) !important;
-        border: 1px solid rgba(255,255,255,0.13) !important;
-        border-radius: 14px !important;
-    }
-
-    [data-testid="stAlert"] div,
-    [data-testid="stAlert"] p,
-    [data-testid="stAlert"] span {
-        color: var(--text-main) !important;
-        background: transparent !important;
-    }
-
-    [data-testid="stAlert"] svg {
-        color: #00C2FF !important;
-        fill: #00C2FF !important;
-    }
-
-    /* ============================================================
        Metric cards
     ============================================================ */
     [data-testid="stMetric"] {
@@ -466,8 +354,9 @@ st.markdown(
     [data-testid="stMetricLabel"] p,
     [data-testid="stMetricLabel"] span {
         color: rgba(234,248,255,0.78) !important;
-        font-size: 12px !important;
-        font-weight: 650 !important;
+        font-size: 14px !important;
+        line-height: 1.25 !important;
+        font-weight: 700 !important;
     }
 
     [data-testid="stMetricValue"],
@@ -489,6 +378,15 @@ st.markdown(
     [data-baseweb="tab-list"] {
         gap: 8px;
         background: transparent !important;
+        border-bottom: none !important;
+    }
+
+    [data-baseweb="tab-border"],
+    [data-baseweb="tab-highlight"] {
+        display: none !important;
+        height: 0px !important;
+        background: transparent !important;
+        border: none !important;
     }
 
     [data-baseweb="tab"] {
@@ -496,23 +394,55 @@ st.markdown(
         border: 1px solid rgba(255,255,255,0.10) !important;
         border-radius: 12px !important;
         color: var(--text-soft) !important;
+        padding: 10px 14px !important;
+        min-height: 46px !important;
+        box-shadow: none !important;
+    }
+
+    [data-baseweb="tab"]::before,
+    [data-baseweb="tab"]::after {
+        display: none !important;
+        background: transparent !important;
+        border: none !important;
+        height: 0px !important;
     }
 
     [data-baseweb="tab"] p,
     [data-baseweb="tab"] span,
     [data-baseweb="tab"] div {
         color: var(--text-soft) !important;
-        font-weight: 700 !important;
+        font-weight: 750 !important;
+        font-size: 17px !important;
     }
 
     [data-baseweb="tab"][aria-selected="true"] {
         background: rgba(0,174,239,0.20) !important;
         border-color: rgba(0,194,255,0.35) !important;
+        box-shadow: none !important;
+    }
+
+    [data-baseweb="tab"][aria-selected="true"] p,
+    [data-baseweb="tab"][aria-selected="true"] span,
+    [data-baseweb="tab"][aria-selected="true"] div {
+        color: #FFFFFF !important;
     }
 
     [data-baseweb="tab-panel"] {
         background: transparent !important;
         color: var(--text-main) !important;
+        padding-top: 12px !important;
+    }
+
+    [data-baseweb="tab-panel"] [data-testid="stMarkdownContainer"] p,
+    [data-baseweb="tab-panel"] [data-testid="stMarkdownContainer"] li,
+    [data-baseweb="tab-panel"] [data-testid="stMarkdownContainer"] span {
+        font-size: 17px !important;
+        line-height: 1.72 !important;
+    }
+
+    [data-baseweb="tab-panel"] h3 {
+        font-size: 24px !important;
+        margin-bottom: 14px !important;
     }
 
     /* ============================================================
@@ -546,45 +476,6 @@ st.markdown(
     [data-testid="stExpander"] svg {
         color: var(--text-soft) !important;
         fill: var(--text-soft) !important;
-    }
-
-    /* ============================================================
-       JSON / code / dict detail area
-    ============================================================ */
-    [data-testid="stJson"],
-    [data-testid="stCodeBlock"],
-    pre,
-    code {
-        background: #151922 !important;
-        color: var(--text-main) !important;
-        border: 1px solid rgba(255,255,255,0.10) !important;
-        border-radius: 12px !important;
-    }
-
-    [data-testid="stJson"] span,
-    [data-testid="stCodeBlock"] span,
-    pre span,
-    code span {
-        color: var(--text-main) !important;
-        background: transparent !important;
-    }
-
-    /* ============================================================
-       Dataframe / table containers
-    ============================================================ */
-    [data-testid="stDataFrame"],
-    [data-testid="stTable"] {
-        background: rgba(255,255,255,0.035) !important;
-        color: var(--text-main) !important;
-        border: 1px solid rgba(255,255,255,0.10) !important;
-        border-radius: 14px !important;
-    }
-
-    [data-testid="stDataFrame"] div,
-    [data-testid="stDataFrame"] span,
-    [data-testid="stTable"] div,
-    [data-testid="stTable"] span {
-        color: var(--text-main) !important;
     }
 
     /* ============================================================
@@ -716,23 +607,31 @@ st.markdown(
     .scenario-item {
         background: rgba(255,255,255,0.025);
         border-radius: 12px;
-        padding: 10px 12px;
+        padding: 12px 14px;
         border: 1px solid rgba(255,255,255,0.05);
+        min-width: 0;
     }
 
     .scenario-label {
-        font-size: 11px;
-        opacity: 0.65;
+        font-size: 12.5px;
+        opacity: 0.70;
         text-transform: uppercase;
-        letter-spacing: 0.4px;
-        margin-bottom: 4px;
+        letter-spacing: 0.35px;
+        margin-bottom: 5px;
         color: #EAF8FF !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .scenario-value {
-        font-size: 14px;
-        font-weight: 700;
+        font-size: 16px;
+        line-height: 1.25;
+        font-weight: 780;
         color: #F7FBFF !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .summary-card {
@@ -747,6 +646,14 @@ st.markdown(
         font-size: 18px;
         font-weight: 800;
         margin-bottom: 10px;
+        color: #F7FBFF !important;
+    }
+
+    .comparison-title {
+        font-size: 18px;
+        line-height: 1.25;
+        font-weight: 800;
+        margin: 4px 0 12px 0;
         color: #F7FBFF !important;
     }
 
@@ -1291,6 +1198,13 @@ st.caption(T["app_caption"])
 
 scenario_temp_change = f"{fmt_temp(t_current)} → {fmt_temp(t_target)}"
 
+if mode == "basic":
+    scenario_mode_label = "初级模式" if is_zh else "Basic mode"
+elif mode == "baseline_pue":
+    scenario_mode_label = "基线 PUE 模式" if is_zh else "Baseline PUE mode"
+else:
+    scenario_mode_label = "COP 模式" if is_zh else "COP mode"
+
 st.markdown(
     f"""
     <div class="scenario-bar">
@@ -1298,7 +1212,7 @@ st.markdown(
         <div class="scenario-grid">
             <div class="scenario-item">
                 <div class="scenario-label">{T['label_model']}</div>
-                <div class="scenario-value">{mode_label}</div>
+                <div class="scenario-value">{scenario_mode_label}</div>
             </div>
             <div class="scenario-item">
                 <div class="scenario-label">{T['label_load_mode']}</div>
@@ -1460,21 +1374,21 @@ if run_button:
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            st.subheader(T["current_scenario"])
+            st.markdown(f"<div class='comparison-title'>{T['current_scenario']}</div>", unsafe_allow_html=True)
             st.metric(T["pue"], fmt_pue(current["pue"]))
             st.metric(T["total_power"], format_number(current["p_total"], 2))
             st.metric(T["cooling_power"], format_number(current["p_cooling"], 2))
             st.metric(T["cost"], format_number(current["cost"], 0))
 
         with col2:
-            st.subheader(T["target_scenario"])
+            st.markdown(f"<div class='comparison-title'>{T['target_scenario']}</div>", unsafe_allow_html=True)
             st.metric(T["pue"], fmt_pue(target["pue"]))
             st.metric(T["total_power"], format_number(target["p_total"], 2))
             st.metric(T["cooling_power"], format_number(target["p_cooling"], 2))
             st.metric(T["cost"], format_number(target["cost"], 0))
 
         with col3:
-            st.subheader(T["difference"])
+            st.markdown(f"<div class='comparison-title'>{T['difference']}</div>", unsafe_allow_html=True)
             st.metric(T["power_saved"], format_number(comparison["diff"]["total_power_saved"], 2))
             st.metric(T["energy_saved"], format_number(savings["energy_saved"], 0))
             st.metric(T["cost_saved"], format_number(savings["cost_saved"], 0))
@@ -1507,19 +1421,10 @@ if run_button:
                 use_container_width=True,
             )
 
-        chart_col3, chart_col4 = st.columns(2)
-
-        with chart_col3:
-            st.plotly_chart(
-                create_power_breakdown_chart(current, target, T),
-                use_container_width=True,
-            )
-
-        with chart_col4:
-            st.plotly_chart(
-                create_savings_chart(savings, annual_savings, T),
-                use_container_width=True,
-            )
+        st.plotly_chart(
+            create_power_breakdown_chart(current, target, T, bar_thickness=0.34),
+            use_container_width=True,
+        )
 
         # ============================================================
         # Decision report

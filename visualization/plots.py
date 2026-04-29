@@ -163,9 +163,11 @@ def create_temperature_cost_curve(
 # Current vs target power breakdown
 # ============================================================
 
-def create_power_breakdown_chart(current, target, text):
+def create_power_breakdown_chart(current, target, text, bar_thickness=0.34):
     """
     Current vs target power breakdown.
+    bar_thickness controls the visual thickness of the two horizontal bars.
+    Smaller values make the bars thinner.
     """
 
     df = pd.DataFrame(
@@ -197,12 +199,26 @@ def create_power_breakdown_chart(current, target, text):
         }
     )
 
+    color_map = {
+        text["core_load"]: "#00C2FF",
+        text["cooling_load"]: "#3DDC97",
+        text["aux_load"]: "#9B5CFF",
+    }
+
     fig = px.bar(
         df,
-        x="Scenario",
-        y="Power",
+        x="Power",
+        y="Scenario",
         color="Type",
+        orientation="h",
         barmode="stack",
+        color_discrete_map=color_map,
+        category_orders={
+            "Scenario": [
+                text["current_scenario"],
+                text["target_scenario"],
+            ]
+        },
         labels={
             "Scenario": "",
             "Power": text["power_kw"],
@@ -211,9 +227,26 @@ def create_power_breakdown_chart(current, target, text):
         title=text["chart_power_compare"],
     )
 
+    fig.update_traces(
+        width=bar_thickness,
+        marker_line_width=0,
+    )
+
     fig.update_layout(
-        height=420,
+        height=390,
         legend_title_text="",
+        bargap=0.30,
+        legend=dict(
+            orientation="h",
+            yanchor="top",
+            y=-0.28,
+            xanchor="center",
+            x=0.5,
+        ),
+        margin=dict(l=40, r=30, t=60, b=95),
+        yaxis=dict(
+            autorange="reversed",
+        ),
     )
 
     return apply_dark_plot_style(fig)
@@ -226,6 +259,7 @@ def create_power_breakdown_chart(current, target, text):
 def create_savings_chart(savings, annual_savings, text):
     """
     Savings comparison chart.
+    Kept for compatibility, although the current app layout no longer displays it.
     """
 
     df = pd.DataFrame(
