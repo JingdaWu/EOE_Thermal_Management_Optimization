@@ -1,0 +1,144 @@
+项目名称：EOE Thermal Management Demo / 热管理与能效优化 Streamlit Demo
+
+项目背景：
+用户正在开发一个面向数据中心和高能耗数字基础设施的温度管理 Python Streamlit demo，属于 EOE（Energy Optimization Engine）体系中的热管理与能效优化模块。用户完全不会写代码，只能复制粘贴、测试、提出修改意见；希望 AI 直接给完整可运行代码，不要拆太碎，不要写太多技术解释。后续目标是继续微调页面风格、精修中英文文案和图表格式，最后上线 Streamlit。
+
+已参考的 PRD：
+模块目标是统一适用于数据中心与高能耗数字基础设施的温控、冷却能耗、PUE 与温控经济性分析。核心逻辑是：
+核心负载功率 P_core → 冷却功率 P_cooling → 总功率 P_total → PUE → 电量/电费 → 节能收益/风险提示/决策建议。
+适用场景包括数据中心、边缘机房、AI 算力节点、高能耗数字设施等。界面文案应尽量使用“核心负载功率”，不要写死 IT 功率。
+
+当前项目结构：
+thermal_demo/
+├─ app.py
+├─ requirements.txt
+├─ core/
+│  ├─ defaults.py
+│  ├─ thermal_model.py
+│  ├─ cost_model.py
+│  ├─ load_estimator.py
+│  ├─ tariff_model.py
+│  ├─ weather_model.py
+│  ├─ risk_model.py
+│  ├─ recommendations.py
+│  └─ report.py
+├─ utils/
+│  ├─ i18n.py
+│  ├─ validators.py
+│  └─ formatters.py
+└─ visualization/
+   └─ plots.py
+
+已实现功能：
+1. 三种计算模式：
+   - basic：经验比例模型
+   - baseline_pue：基线 PUE 模型
+   - cop：COP 模型，默认启用室外温度修正
+
+2. 温度与气温：
+   - 当前设定温度，默认 20°C
+   - 目标设定温度，默认 24°C
+   - 室外温度，默认 30°C
+   - 产品逻辑：节能优化场景下，目标温度通常高于当前温度，不是低于当前温度
+   - 已去掉季节/月度气温选择，只保留室外温度输入
+
+3. 负载输入方式：
+   - 直接输入核心负载功率
+   - 设备数量 × 单台额定功率 × 利用率估算
+   - 用周期总电量反推核心负载
+   - 用周期总电费反推核心负载
+   - 电量/电费反推已修复过 DuplicateElementId 问题，关键是各 number_input 都要有唯一 key
+
+4. 分时电价：
+   - 默认使用五档 TOU：尖峰、峰、平、谷、深谷
+   - 每档包括电价（¥/kWh）和时长（h）
+   - 电费计算采用加权平均电价，不要求时长之和必须等于 24h
+   - 不显示时长不等于 24h 的 warning，因为希望工具轻量化，避免吓到用户
+   - 货币默认人民币 ¥，不再需要货币选择功能
+   - 左侧输入和右侧指标标题带单位，下面数字不带单位；报告正文仍可保留 ¥xxx
+
+5. 输出指标：
+   - 当前方案和目标方案的 PUE
+   - 总功率、冷却功率
+   - 周期总电费
+   - 节省功率、节省电量、节省电费、年化节省电费
+   - 每 °C 节省电费
+   - 冷却比例等
+
+6. 图表：
+   - 温度 - PUE 曲线
+   - 温度 - 电费曲线
+   - 当前与目标方案功率构成对比
+   - 节能收益对比
+   - plots.py 曾出现 Plotly 报错：Invalid property ‘titlefont’，原因是 Plotly 新版本不支持 xaxis/yaxis 的 titlefont，应使用 fig.update_xaxes(title_font=...) 和 fig.update_yaxes(title_font=...)。后来已修复。
+
+7. 报告：
+   - report.py 生成前端显示的决策报告，不需要导出 Word/PDF
+   - 包括分析摘要、经济性结论、决策建议、风险提示、高级洞察
+   - 风险模型包括温度风险、调温幅度风险、缺少局部监测风险、PUE 变差风险
+   - 报告正文应保留自然语言单位，例如 ¥xxx
+
+8. 语言系统：
+   - 支持中英文切换
+   - 大部分前端文字放在 utils/i18n.py
+   - 决策报告模板放在 core/report.py
+   - 用户后续会精修中英文文案，所以新增文字应优先放入 i18n.py 或 report.py，不要硬编码在 app.py 里，除非是临时调试
+
+页面与 UI 当前状态：
+1. app.py 已对齐用户上一个 EOE demo 的大体布局：
+   - 左侧 sidebar 控制输入
+   - 语言切换按钮
+   - Run / 开始模拟运行按钮
+   - 顶部 Hero 卡片
+   - Scenario Summary 场景概览
+   - 点击 Run 后才显示结果
+   - 结果区、图表区、报告区
+
+2. 左侧 sidebar 顺序已经调整为：
+   - 参数输入 + 语言切换
+   - 计算模型
+   - 温度与气温
+   - 核心负载
+   - 分时电价
+   - 高级参数
+   - 开始模拟运行
+
+3. 温度设定和室外温度已合并为“温度与气温”模块。
+
+4. 电价模块已经压缩成一行两列：
+   - 左边电价
+   - 右边时长
+
+5. 配色方面：
+   - 部分模块已经接近旧 demo 风格，例如“计算模型 选择热管理估算方法。”这类 section-card
+   - 但左侧 Streamlit 原生 number_input 输入框边框仍然显得亮白刺眼，之前尝试多次用 CSS 覆盖 [data-baseweb="input"]、[data-testid="stNumberInput"] 等选择器，但用户反馈没有变化
+   - 后续需要继续精修 Streamlit 原生组件样式，可能需要结合浏览器开发者工具检查真实 class/DOM
+   - 用户已暂时放弃继续纠缠边框问题，计划新对话后继续微调页面风格
+
+最近一次状态：
+用户已经基本确认功能没有大问题，当前主要剩余工作是：
+1. 继续微调页面风格/配色，尤其左侧输入框边框、原生组件、右侧图表区域
+2. 精修中英文文案
+3. 精修图表格式
+4. 最后上线 Streamlit
+
+用户偏好：
+- 用户不会写代码，不要让用户理解技术细节
+- 给代码时最好给完整可复制文件，不要只给零碎片段，除非用户明确要求
+- 不要频繁说“下一步建议”，用户更喜欢直接产出结果
+- 修改时必须保留已有能正常运行的功能，不要把几百行代码简化成几十行
+- 各分区注释不要丢
+- 对 UI 修改要谨慎，不要动核心计算逻辑
+- 代码要适合复制粘贴测试
+- 用户喜欢页面风格对齐之前的 EOE demo：深色背景、蓝色渐变 Hero、半透明深色模块卡片、弱白色边框、蓝色 chip、Run 按钮、Scenario Summary
+
+已知需要避免的问题：
+- 不要删除已有高级功能
+- 不要把 app.py 简化成 demo 版
+- 不要用 st.write(dict) 展示分时电价详情，因为会出现纯白 JSON 区域；后来用户觉得右下角分时电价详情不重要，建议删除这个分区
+- Plotly 不要用 titlefont，要用 title_font 或 layout title font
+- number_input 必须加唯一 key，避免 DuplicateElementId
+- 不要在左侧重复创建同名 operating_hours 输入框；如果反推需要时长，使用 estimate_hours_energy / estimate_hours_cost 等独立 key
+
+后续建议的新对话启动方式：
+“请根据以下 summary 继续 EOE Thermal Management Demo 项目。当前功能基本可运行，接下来先微调页面风格，再精修中英文文案和图表格式，最后准备上线 Streamlit。用户不会写代码，需要直接给完整可复制代码，保留已有功能，不要删核心逻辑。”
