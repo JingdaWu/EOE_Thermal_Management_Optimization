@@ -17,83 +17,83 @@ from utils.formatters import (
 
 REPORT_TEXT = {
     "zh": {
-        "summary_title": "分析摘要",
-        "economic_title": "经济性结论",
-        "decision_title": "决策建议",
+        "summary_title": "热管理调优与经济性分析摘要",
+        "economic_title": "经济性分析结论",
+        "decision_title": "进一步能源调优相关决策建议",
         "risk_title": "风险提示",
-        "advanced_title": "模型洞察",
+        "advanced_title": "使用模型相关内容洞察",
 
         "summary_basic": (
-            "当前采用初级经验比例模型。将设定温度由 {t_current} 调整至 {t_target} 后，"
-            "预计设施总功率由 {current_power} 变化至 {target_power}，"
-            "PUE / 总能耗系数由 {current_pue} 变化至 {target_pue}。"
-            "该结果适合作为缺少现场详细参数时的快速节能潜力判断。"
+            "当前评估模式采用初级经验比例模型。将热管理系统设定温度由 {t_current} 调整至 {t_target} 后，"
+            "设施内总功率消耗将由 {current_power} 优化至 {target_power}，"
+            "PUE（总能耗系数）将由 {current_pue} 优化至 {target_pue}。"
+            "该结果适合设施详细数据未知或仅需快速评估调温节能潜力场景。"
         ),
         "summary_baseline_pue": (
-            "当前采用中级基线 PUE 模型，并以当前基线 PUE = {pue_base} 作为能效基准。"
-            "将设定温度由 {t_current} 调整至 {t_target} 后，预计设施总功率由 {current_power} 变化至 {target_power}，"
-            "PUE / 总能耗系数由 {current_pue} 变化至 {target_pue}。"
-            "该结果更适合已有 PUE 监测或能耗台账的场景。"
+            "当前评估模式采用中级基线PUE模型，并以当前基线PUE（总能耗系数）= {pue_base} 作为能效基准。"
+            "将热管理系统设定温度由 {t_current} 调整至 {t_target} 后，设施内总功率消耗将由 {current_power} 优化至 {target_power}，"
+            "PUE（总能耗系数）将由 {current_pue} 优化至 {target_pue}。"
+            "该结果更适合冷却系统COP已知场景，可开展高精度、高专业性温控收益评估与分析"
         ),
         "summary_cop": (
-            "当前采用高级 COP 模型，并纳入室外温度 {t_outdoor} 对冷却效率的影响。"
-            "将设定温度由 {t_current} 调整至 {t_target} 后，预计设施总功率由 {current_power} 变化至 {target_power}，"
-            "PUE / 总能耗系数由 {current_pue} 变化至 {target_pue}，"
-            "冷却系统 COP 由 {current_cop} 变化至 {target_cop}。"
+            "当前采用高级COP模型，并考虑室外温度 {t_outdoor} 对冷却效率的影响。"
+            "将热管理系统设定温度由 {t_current} 调整至 {t_target} 后，设施内总功率消耗将由 {current_power} 优化至 {target_power}，"
+            "PUE（总能耗系数）将由 {current_pue} 优化至 {target_pue}。"
+            "冷却系统COP由 {current_cop} 变化至 {target_cop}。"
         ),
 
         "savings_positive": (
-            "按全年 24×365 小时运行估算，调温前年电量约 {current_energy}，调温后年电量约 {target_energy}，"
-            "年节省电量约 {annual_energy_saved}，年化节省电费约 {annual_cost_saved}。"
-            "折算到每 1°C 调整，年化边际节省电费约 {marginal_savings}。"
+            "按用户输入总功率消耗估算，热管理系统优化前年化电量消耗 {current_energy}，优化前年化电量消耗为 {target_energy}，"
+            "按加权平均电价估算，热管理系统优化前后年化电量节省为 {annual_energy_saved}，年化能源经济性节省为 {annual_cost_saved}。"
+            "热管理系统每1°C调整所对应的年化边际节省电费为 {marginal_savings}。"
         ),
         "savings_negative": (
-            "在当前参数下，目标方案未体现出明确节能收益。建议检查目标温度、当前 PUE、冷却参数、室外温度或电价输入是否合理。"
+            "在当前输入数据与参数下，热管理系统调优方案未体现出明确节能收益。建议检查目标温度、当前PUE、冷却参数、室外温度或电价输入是否合理。"
         ),
 
-        "economic_positive_savings": "温控优化可以降低基础运行负荷，通常属于低 CAPEX、见效较快的能效优化措施。",
-        "economic_no_positive_savings": "当前目标方案未产生正向节能收益，不建议直接作为节能方案采用。",
-        "economic_high_savings": "本场景的年化节省电费较高，建议优先开展小规模试运行和现场验证。",
-        "economic_medium_savings": "本场景存在一定节能价值，适合作为运维优化或能效改造的候选方案。",
-        "economic_low_savings": "本场景节省金额较低，建议结合设备风险、管理成本和现场改造难度综合判断。",
-        "economic_annual_view": "右侧结果已优先采用年化口径，更适合判断长期运行成本与节能价值。",
-        "economic_cooling_cost": "仅从冷却侧看，预计年化冷却电费节省约 {cooling_cost_saved}，可作为评估冷却系统优化收益的重要参考。",
+        "economic_positive_savings": "热管理系统调优可以降低基础运行负荷，通常属于低成本支出、高经济收益的能效优化措施。",
+        "economic_no_positive_savings": "当前热管理系统调优方案未产生正向节能收益，不建议直接作为经济性优化方案采用。",
+        "economic_high_savings": "在当前输入数据与参数下年化经济性收益较高，建议优先开展小规模试运行和现场验证。",
+        "economic_medium_savings": "在当前输入数据与参数下存在正向年化经济性收益，热管理系统调优适合作为运维优化或能效改造的候选方案。",
+        "economic_low_savings": "在当前输入数据与参数下年化经济性收益较低，建议结合设备风险、管理成本和现场改造难度综合判断。",
+        "economic_annual_view": "分析结果已以年化收益进行标准化，更适合判断设施长期运行的经济性收益",
+        "economic_cooling_cost": "仅从冷却系统收益角度分析，预计年化冷却系统电费节约 {cooling_cost_saved}，可作为评估优化冷却系统经济性收益的重要参考。",
 
-        "decision_raise_temperature": "建议采用分阶段升温策略，不建议一次性大幅调整温度。",
-        "decision_lower_temperature": "目标温度低于当前温度，通常会提高冷却能耗；若无明确安全或工艺需求，不建议主动降温。",
-        "decision_keep_temperature": "当前温度与目标温度相同，温控策略本身不会带来明显节能变化。",
-        "decision_target_in_recommended_range": "目标温度处于相对合理区间，适合在加强监测的前提下进行试运行。",
-        "decision_target_too_conservative": "目标温度偏保守，节能空间可能没有充分释放。",
-        "decision_target_aggressive": "目标温度偏激进，虽然节能潜力更高，但需要确认进风温度、热点和设备告警情况。",
+        "decision_raise_temperature": "建议采用分阶段逐渐升温策略，不建议一次性大幅调整温度。",
+        "decision_lower_temperature": "热管理系统调优目标温度低于当前设定温度，通常会提高冷却能耗；若无明确安全性或运维需求，不建议主动降温。",
+        "decision_keep_temperature": "当前温度与热管理系统调优目标温度相同，温控策略不会带来能源和经济性收益。",
+        "decision_target_in_recommended_range": "热管理系统调优目标温度处于相对合理区间，适合在具备安全性监测的前提下进行试运行。",
+        "decision_target_too_conservative": "热管理系统调优目标温度设定较为保守，能源及经济性优化空间可能没有充分释放。",
+        "decision_target_aggressive": "热管理系统调优目标温度设定较为激进，虽然能源及经济性优化潜力更高，但需要进一步确认进风温度、热点和设备预警情况。",
         "decision_target_high_risk": "目标温度较高，风险可能明显增加，不建议在缺少现场监测的情况下直接采用。",
-        "decision_basic": "初级模式结果适合用于早期筛选，不建议直接作为最终改造依据。",
-        "decision_baseline": "中级模式应优先确认基线 PUE 的来源，若 PUE 来自长期监测数据，结论可信度会明显提高。",
-        "decision_cop": "高级模式适合用于更接近工程现场的预评估，但仍建议结合现场温度、气流组织和设备告警记录进行验证。",
+        "decision_basic": "初级模式分析结果适合用于早期快速评估，不建议直接作为热管理系统调优的决策依据。",
+        "decision_baseline": "开展中级模式应优先确认基线PUE的数据来源，若基线PUE来自于长期监测数据，结论可信度会明显提高。",
+        "decision_cop": "高级模式适合用于更接近工程现场的预评估，但仍建议结合现场温度、气流组织和设备预警记录进行交叉验证。",
 
-        "risk_lack_local_monitoring": "当前未启用局部热点/温度监测假设，结果不能替代现场热环境测试。",
-        "risk_hotspot_risk": "较高温度设定可能增加局部热点、设备告警或稳定性风险。",
-        "risk_large_temperature_step": "本次温度调整幅度较大，建议分阶段调整，并观察至少一个完整运行周期。",
-        "risk_pue_worse": "目标方案 PUE 高于当前方案，说明参数下能效表现变差，需要重新检查输入。",
-        "risk_general": "本模块为基于平均负荷、简化冷却模型和分时电价假设的估算工具，不替代专业热仿真、CFD 分析或现场测试。",
-        "risk_basic_model": "初级模式隐藏了冷却系统细节，适合快速估算，但不适合直接评价复杂冷却系统的真实性能。",
-        "risk_baseline_model": "中级模式对当前基线 PUE 较敏感，若输入的 PUE 偏离真实运行水平，经济性结论也会偏离。",
-        "risk_cop_model": "高级模式已考虑 COP 和室外温度，但仍未覆盖机柜级热点、气流短路、湿度、冗余策略等现场因素。",
+        "risk_lack_local_monitoring": "当前未启用局部热点及温度监测假设，分析结果不能替代现场热管理系统运行实际测试。",
+        "risk_hotspot_risk": "较高的设定设定可能增加局部热点、设备预警可能性，可能导致设备长期运行稳定性风险。",
+        "risk_large_temperature_step": "本次热管理系统温度调整幅度较大，建议分阶段逐步调整，并实际观察至少一个完整运行周期。",
+        "risk_pue_worse": "热管理系统调优后PUE高于当前方案，说明当前输入数据及参数条件下调优效果变差，请重新检查输入数据是否有误。",
+        "risk_general": "本程序为基于平均负荷、简化冷却模型和分时电价假设的能耗评估和决策辅助工具，不替代专业热仿真、CFD分析或现场测试。",
+        "risk_basic_model": "初级分析模式忽略了部分冷却系统细节，仅适合优化前期快速估算，不适合直接评价复杂冷却系统的真实性能和调优收益。",
+        "risk_baseline_model": "中级分析模式对基线PUE精度较敏感，若输入的PUE偏离设施真实运行水平，能耗与经济性分析结论也可能有所偏离。",
+        "risk_cop_model": "高级分析模式虽然已经充分考虑COP和室外温度等参数，但仍未覆盖机柜级热点、气流短路、湿度、冗余策略等现场实际因素。",
 
-        "insight_temp_sensitive": "该系统对温度变化较敏感，调温可带来较明显的节能收益。",
-        "insight_temp_insensitive": "该系统对温度变化不够敏感，单纯调温带来的节能空间可能有限。",
-        "insight_cooling_dominant": "冷却功率占比较高，优化重点应优先放在温控策略、气流组织或冷却系统效率上。",
-        "insight_low_cooling": "冷却功率占比较低，温控优化对整体电费的影响有限。",
-        "insight_high_pue": "当前 PUE 偏高，除调温外，还存在进一步系统性优化空间。",
-        "insight_good_pue": "当前 PUE 已处于相对较好区间，后续优化应关注风险控制和边际收益。",
-        "insight_pue_reduction": "本次调温带来的 PUE 降低比例约为 {pue_reduction_rate}。",
-        "insight_power_reduction": "本次调温带来的总功率下降比例约为 {power_reduction_rate}。",
-        "insight_cop_improved": "目标方案下 COP 有所提高，说明在当前参数下，温度调整有助于改善冷却效率。",
-        "insight_cop_not_improved": "目标方案下 COP 改善不明显，节能收益主要来自冷却负荷比例变化或经验参数假设。",
-        "insight_outdoor": "室外温度越高，冷却系统效率通常越容易受压制，因此高级模式结果应结合当地气候和季节复核。",
-        "risk_low": "整体风险较低，可推进优化。",
-        "risk_normal": "风险可控，建议逐步验证。",
-        "risk_elevated": "存在一定风险，建议谨慎调整并加强监测。",
-        "risk_high": "风险较高，不建议直接实施大幅调整。",
+        "insight_temp_sensitive": "系统设施能耗对温度变化较敏感，优化热管理系统可带来较明显的能源与经济性收益。",
+        "insight_temp_insensitive": "系统设施能耗对温度变化不够敏感，单纯优化热管理系统带来的能源与经济性空间可能有限。",
+        "insight_cooling_dominant": "系统设施冷却功率占比较高，对冷却设施功耗的优化应优先于热管理策略、气流组织或冷却系统效率上。",
+        "insight_low_cooling": "系统设施冷却功率占比较低，对冷却设施功耗的优化对系统整体能耗和经济性的影响有限。",
+        "insight_high_pue": "当前PUE偏高，除热管理系统调优外，还存在进一步系统性优化的空间。",
+        "insight_good_pue": "当前PUE已处于相对较好区间，后续优化应关注风险控制和边际收益。",
+        "insight_pue_reduction": "本次热管理系统调优带来的PUE降低比例为 {pue_reduction_rate}。",
+        "insight_power_reduction": "本次热管理系统调优带来的总功率下降比例为 {power_reduction_rate}。",
+        "insight_cop_improved": "热管理系统调优方案下COP有所提高，说明在当前数据和参数下，热管理系统调优有助于明显改善冷却效率。",
+        "insight_cop_not_improved": "当前热管理系统调优方案下COP改善不明显，说明能源与经济性收益主要来自冷却负荷比例变化或经验参数假设。",
+        "insight_outdoor": "系统设施所处环境室外温度越高，冷却系统效率越容易承受负向影响，因此高级分析模式的结果应结合当地气候和季节开展进一步复核。",
+        "risk_low": "整体系统风险较低，建议进一步推进热管理系统调优。",
+        "risk_normal": "整体系统风险可控，建议在推进热管理系统调优过程中逐步验证分析结果的准确性。",
+        "risk_elevated": "整体系统存在一定风险，建议谨慎开展热管理系统调优并加强实际监测与核实。",
+        "risk_high": "整体系统风险较高，不建议直接大范围开展热管理系统调优。",
     },
 
     "en": {
