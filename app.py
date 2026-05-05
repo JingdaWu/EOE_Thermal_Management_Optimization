@@ -698,6 +698,7 @@ st.markdown(
 )
 
 
+
 # ============================================================
 # Sidebar helper
 # ============================================================
@@ -716,6 +717,12 @@ def render_sidebar_section(title: str, desc: str) -> None:
 
 def format_number(value: float, digits: int = 0) -> str:
     return f"{value:,.{digits}f}"
+
+
+def safe_ratio(numerator: float, denominator: float) -> float:
+    if denominator == 0:
+        return 0.0
+    return numerator / denominator
 
 
 # ============================================================
@@ -765,10 +772,26 @@ else:
 
 
 # ============================================================
-# Sidebar - temperature and weather
+# Sidebar - mode-aware default values
 # ============================================================
 
-render_sidebar_section(T["section_temp_weather"], T["section_temp_weather_desc"])
+aux_ratio = DEFAULTS["aux_ratio"]
+t_ref = DEFAULTS["t_ref"]
+k_ref = DEFAULTS["k_ref"]
+cooling_sensitivity = DEFAULTS["cooling_sensitivity"]
+pue_base = 1.60
+cop_ref = DEFAULTS["cop_ref"]
+cop_sensitivity = DEFAULTS["cop_sensitivity"]
+heat_load_factor = DEFAULTS["heat_load_factor"]
+t_outdoor = 30.0
+has_local_monitoring = False
+
+
+# ============================================================
+# Sidebar - temperature
+# ============================================================
+
+render_sidebar_section(T["section_temp"], T["section_temp_desc"])
 
 t_current = st.sidebar.number_input(
     T["t_current"],
@@ -788,16 +811,93 @@ t_target = st.sidebar.number_input(
     key="t_target",
 )
 
-t_outdoor = st.sidebar.number_input(
-    T["outdoor_temp"],
-    min_value=-30.0,
-    max_value=60.0,
-    value=30.0,
-    step=1.0,
-    key="outdoor_temp",
-)
-
 st.sidebar.info(T["temperature_hint"])
+
+
+# ============================================================
+# Sidebar - baseline PUE parameters, shown only in standard mode
+# ============================================================
+
+if mode == "baseline_pue":
+    render_sidebar_section(T["section_baseline"], T["section_baseline_desc"])
+    pue_base = st.sidebar.number_input(
+        T["pue_base"],
+        min_value=1.01,
+        max_value=5.00,
+        value=1.60,
+        step=0.01,
+        key="pue_base",
+    )
+
+
+# ============================================================
+# Sidebar - COP and weather parameters, shown only in advanced mode
+# ============================================================
+
+if mode == "cop":
+    render_sidebar_section(T["section_weather"], T["section_weather_desc"])
+    t_outdoor = st.sidebar.number_input(
+        T["outdoor_temp"],
+        min_value=-30.0,
+        max_value=60.0,
+        value=30.0,
+        step=1.0,
+        key="outdoor_temp",
+    )
+
+    render_sidebar_section(T["section_cop"], T["section_cop_desc"])
+    with st.sidebar.expander(T["advanced_params"], expanded=False):
+        aux_ratio = st.number_input(
+            T["aux_ratio"],
+            min_value=0.00,
+            max_value=0.50,
+            value=DEFAULTS["aux_ratio"],
+            step=0.01,
+            help=T["aux_ratio_help"],
+            key="aux_ratio",
+        )
+
+        t_ref = st.number_input(
+            T["t_ref"],
+            min_value=10.0,
+            max_value=40.0,
+            value=DEFAULTS["t_ref"],
+            step=1.0,
+            key="t_ref",
+        )
+
+        cop_ref = st.number_input(
+            T["cop_ref"],
+            min_value=1.00,
+            max_value=10.00,
+            value=DEFAULTS["cop_ref"],
+            step=0.10,
+            key="cop_ref",
+        )
+
+        cop_sensitivity = st.number_input(
+            T["cop_sensitivity"],
+            min_value=0.00,
+            max_value=1.00,
+            value=DEFAULTS["cop_sensitivity"],
+            step=0.01,
+            key="cop_sensitivity",
+        )
+
+        heat_load_factor = st.number_input(
+            T["heat_load_factor"],
+            min_value=0.50,
+            max_value=1.50,
+            value=DEFAULTS["heat_load_factor"],
+            step=0.05,
+            key="heat_load_factor",
+        )
+
+        has_local_monitoring = st.checkbox(
+            T["has_local_monitoring"],
+            value=False,
+            key="has_local_monitoring",
+        )
 
 
 # ============================================================
@@ -817,14 +917,16 @@ load_mode_label = st.sidebar.selectbox(
     key="load_mode_select",
 )
 
-assumed_pue_for_estimation = st.sidebar.number_input(
-    T["assumed_pue"],
-    min_value=1.01,
-    max_value=5.00,
-    value=1.60,
-    step=0.01,
-    key="assumed_pue_for_estimation",
-)
+assumed_pue_for_estimation = 1.60
+if load_mode_label in [T["load_energy"], T["load_cost"]]:
+    assumed_pue_for_estimation = st.sidebar.number_input(
+        T["assumed_pue"],
+        min_value=1.01,
+        max_value=5.00,
+        value=1.60,
+        step=0.01,
+        key="assumed_pue_for_estimation",
+    )
 
 p_core = None
 
@@ -1057,94 +1159,6 @@ tou_hours_sum = (
 
 
 # ============================================================
-# Sidebar - advanced parameters
-# ============================================================
-
-render_sidebar_section(T["section_advanced"], T["section_advanced_desc"])
-
-with st.sidebar.expander(T["advanced_params"], expanded=False):
-    aux_ratio = st.number_input(
-        T["aux_ratio"],
-        min_value=0.00,
-        max_value=0.50,
-        value=DEFAULTS["aux_ratio"],
-        step=0.01,
-        help=T["aux_ratio_help"],
-        key="aux_ratio",
-    )
-
-    t_ref = st.number_input(
-        T["t_ref"],
-        min_value=10.0,
-        max_value=40.0,
-        value=DEFAULTS["t_ref"],
-        step=1.0,
-        key="t_ref",
-    )
-
-    k_ref = st.number_input(
-        T["k_ref"],
-        min_value=0.05,
-        max_value=1.00,
-        value=DEFAULTS["k_ref"],
-        step=0.01,
-        key="k_ref",
-    )
-
-    cooling_sensitivity = st.number_input(
-        T["cooling_sensitivity"],
-        min_value=0.00,
-        max_value=0.20,
-        value=DEFAULTS["cooling_sensitivity"],
-        step=0.01,
-        help=T["cooling_sensitivity_help"],
-        key="cooling_sensitivity",
-    )
-
-    pue_base = st.number_input(
-        T["pue_base"],
-        min_value=1.01,
-        max_value=5.00,
-        value=1.60,
-        step=0.01,
-        key="pue_base",
-    )
-
-    cop_ref = st.number_input(
-        T["cop_ref"],
-        min_value=1.00,
-        max_value=10.00,
-        value=DEFAULTS["cop_ref"],
-        step=0.10,
-        key="cop_ref",
-    )
-
-    cop_sensitivity = st.number_input(
-        T["cop_sensitivity"],
-        min_value=0.00,
-        max_value=1.00,
-        value=DEFAULTS["cop_sensitivity"],
-        step=0.01,
-        key="cop_sensitivity",
-    )
-
-    heat_load_factor = st.number_input(
-        T["heat_load_factor"],
-        min_value=0.50,
-        max_value=1.50,
-        value=DEFAULTS["heat_load_factor"],
-        step=0.05,
-        key="heat_load_factor",
-    )
-
-    has_local_monitoring = st.checkbox(
-        T["has_local_monitoring"],
-        value=False,
-        key="has_local_monitoring",
-    )
-
-
-# ============================================================
 # Sidebar - run button
 # ============================================================
 
@@ -1201,9 +1215,9 @@ scenario_temp_change = f"{fmt_temp(t_current)} → {fmt_temp(t_target)}"
 if mode == "basic":
     scenario_mode_label = "初级模式" if is_zh else "Basic mode"
 elif mode == "baseline_pue":
-    scenario_mode_label = "基线 PUE 模式" if is_zh else "Baseline PUE mode"
+    scenario_mode_label = "中级模式" if is_zh else "Standard mode"
 else:
-    scenario_mode_label = "COP 模式" if is_zh else "COP mode"
+    scenario_mode_label = "高级模式" if is_zh else "Advanced mode"
 
 st.markdown(
     f"""
@@ -1268,15 +1282,25 @@ if run_button:
             cop_ref=cop_ref,
             cop_sensitivity=cop_sensitivity,
             heat_load_factor=heat_load_factor,
-            use_weather=True,
-            weather_mode="outdoor",
-            t_outdoor=t_outdoor,
+            use_weather=(mode == "cop"),
+            weather_mode="outdoor" if mode == "cop" else "none",
+            t_outdoor=t_outdoor if mode == "cop" else None,
         )
 
         cost_comparison = compare_costs(
             current=comparison["current"],
             target=comparison["target"],
             hours=operating_hours,
+            price=weighted_avg_price,
+            use_tou=True,
+            tou_structure=tou_structure,
+        )
+
+        annual_hours = DEFAULTS["hours_per_day"] * DEFAULTS["days_per_year"]
+        annual_cost_comparison = compare_costs(
+            current=comparison["current"],
+            target=comparison["target"],
+            hours=annual_hours,
             price=weighted_avg_price,
             use_tou=True,
             tou_structure=tou_structure,
@@ -1290,7 +1314,7 @@ if run_button:
         )
 
         marginal_savings = calculate_marginal_savings_per_degree(
-            cost_saved=cost_comparison["savings"]["cost_saved"],
+            cost_saved=annual_cost_comparison["savings"]["cost_saved"],
             t_current=t_current,
             t_target=t_target,
         )
@@ -1298,9 +1322,15 @@ if run_button:
         report = build_report(
             comparison=comparison,
             cost_comparison=cost_comparison,
+            annual_cost_comparison=annual_cost_comparison,
             annual_savings=annual_savings,
             t_current=t_current,
             t_target=t_target,
+            mode=mode,
+            pue_base=pue_base,
+            t_outdoor=t_outdoor if mode == "cop" else None,
+            weighted_avg_price=weighted_avg_price,
+            marginal_savings=marginal_savings,
             has_local_monitoring=has_local_monitoring,
             lang=language,
             currency=currency,
@@ -1320,79 +1350,64 @@ if run_button:
             cop_ref=cop_ref,
             cop_sensitivity=cop_sensitivity,
             heat_load_factor=heat_load_factor,
-            use_weather=True,
-            weather_mode="outdoor",
-            t_outdoor=t_outdoor,
+            use_weather=(mode == "cop"),
+            weather_mode="outdoor" if mode == "cop" else "none",
+            t_outdoor=t_outdoor if mode == "cop" else None,
         )
 
         st.success(T["analysis_done"])
 
         # ============================================================
-        # Model notice
+        # Annual results
         # ============================================================
 
-        with st.expander(T["model_notice_title"], expanded=False):
-            if mode == "basic":
-                st.write(T["basic_notice"])
-            elif mode == "baseline_pue":
-                st.write(T["baseline_notice"])
-            else:
-                st.write(T["cop_notice"])
+        st.markdown(f"<div class='panel-title'>{T['annual_results_title']}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='panel-subtitle'>{T['annual_results_desc']}</div>", unsafe_allow_html=True)
 
-        # ============================================================
-        # Results
-        # ============================================================
+        current = annual_cost_comparison["current"]
+        target = annual_cost_comparison["target"]
+        savings = annual_cost_comparison["savings"]
 
-        st.markdown(f"<div class='panel-title'>{T['key_metrics']}</div>", unsafe_allow_html=True)
-        st.markdown(f"<div class='panel-subtitle'>{T['kpi_desc']}</div>", unsafe_allow_html=True)
+        current_energy = current["energy"]
+        target_energy = target["energy"]
+        energy_saved = savings["energy_saved"]
+        energy_saving_rate = safe_ratio(energy_saved, current_energy)
 
-        current = cost_comparison["current"]
-        target = cost_comparison["target"]
-        savings = cost_comparison["savings"]
+        current_cost = current["cost"]
+        target_cost = target["cost"]
+        annual_cost_saved = savings["cost_saved"]
 
-        kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-        kpi1.metric(T["power_saved"], format_number(comparison["diff"]["total_power_saved"], 2))
-        kpi2.metric(T["energy_saved"], format_number(savings["energy_saved"], 0))
-        kpi3.metric(T["cost_saved"], format_number(savings["cost_saved"], 0))
-        kpi4.metric(T["annual_cost_saved"], format_number(annual_savings["annual_cost_saved"], 0))
+        current_power = current["p_total"]
+        target_power = target["p_total"]
+        power_saved = current_power - target_power
+        power_reduction_rate = safe_ratio(power_saved, current_power)
 
-        kpi5, kpi6, kpi7, kpi8 = st.columns(4)
-        kpi5.metric(T["pue"], fmt_pue(target["pue"]))
-        kpi6.metric(T["total_power"], format_number(target["p_total"], 2))
-        kpi7.metric(T["cooling_power"], format_number(target["p_cooling"], 2))
-        kpi8.metric(T["marginal_savings"], format_number(marginal_savings, 0))
-
-        st.markdown(
-            f"""
-            <div class="summary-card">
-                <div class="summary-title">{T['results_title']}</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        current_pue = current["pue"]
+        target_pue = target["pue"]
+        pue_reduction_rate = safe_ratio(current_pue - target_pue, current_pue)
 
         col1, col2, col3 = st.columns(3)
 
         with col1:
             st.markdown(f"<div class='comparison-title'>{T['current_scenario']}</div>", unsafe_allow_html=True)
-            st.metric(T["pue"], fmt_pue(current["pue"]))
-            st.metric(T["total_power"], format_number(current["p_total"], 2))
-            st.metric(T["cooling_power"], format_number(current["p_cooling"], 2))
-            st.metric(T["cost"], format_number(current["cost"], 0))
+            st.metric(T["current_annual_energy"], format_number(current_energy, 0))
+            st.metric(T["current_annual_cost"], format_number(current_cost, 0))
+            st.metric(T["current_total_power"], format_number(current_power, 2))
+            st.metric(T["current_pue"], fmt_pue(current_pue))
 
         with col2:
             st.markdown(f"<div class='comparison-title'>{T['target_scenario']}</div>", unsafe_allow_html=True)
-            st.metric(T["pue"], fmt_pue(target["pue"]))
-            st.metric(T["total_power"], format_number(target["p_total"], 2))
-            st.metric(T["cooling_power"], format_number(target["p_cooling"], 2))
-            st.metric(T["cost"], format_number(target["cost"], 0))
+            st.metric(T["target_annual_energy"], format_number(target_energy, 0))
+            st.metric(T["target_annual_cost"], format_number(target_cost, 0))
+            st.metric(T["target_total_power"], format_number(target_power, 2))
+            st.metric(T["target_pue"], fmt_pue(target_pue))
 
         with col3:
-            st.markdown(f"<div class='comparison-title'>{T['difference']}</div>", unsafe_allow_html=True)
-            st.metric(T["power_saved"], format_number(comparison["diff"]["total_power_saved"], 2))
-            st.metric(T["energy_saved"], format_number(savings["energy_saved"], 0))
-            st.metric(T["cost_saved"], format_number(savings["cost_saved"], 0))
-            st.metric(T["cooling_ratio"], fmt_percent(target["cooling_ratio"]))
+            st.markdown(f"<div class='comparison-title'>{T['optimization_effect']}</div>", unsafe_allow_html=True)
+            st.metric(T["energy_saving_rate"], fmt_percent(energy_saving_rate))
+            st.metric(T["annual_cost_saved_short"], format_number(annual_cost_saved, 0))
+            st.metric(T["power_reduction_rate"], fmt_percent(power_reduction_rate))
+            st.metric(T["pue_reduction_rate"], fmt_percent(pue_reduction_rate))
 
         # ============================================================
         # Charts
@@ -1412,7 +1427,7 @@ if run_button:
             st.plotly_chart(
                 create_temperature_cost_curve(
                     curve_data=curve_data,
-                    hours=operating_hours,
+                    hours=annual_hours,
                     text=T,
                     price=weighted_avg_price,
                     use_tou=True,
@@ -1425,6 +1440,18 @@ if run_button:
             create_power_breakdown_chart(current, target, T, bar_thickness=0.34),
             use_container_width=True,
         )
+
+        # ============================================================
+        # Model notice
+        # ============================================================
+
+        with st.expander(T["model_notice_title"], expanded=False):
+            if mode == "basic":
+                st.write(T["basic_notice"])
+            elif mode == "baseline_pue":
+                st.write(T["baseline_notice"])
+            else:
+                st.write(T["cop_notice"])
 
         # ============================================================
         # Decision report

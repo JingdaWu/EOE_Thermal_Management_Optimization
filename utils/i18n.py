@@ -344,5 +344,66 @@ TEXT = {
 }
 
 
+
+# ============================================================
+# Mode-aware UI additions
+# ============================================================
+
+EXTRA_TEXT = {
+    "zh": {
+        "section_temp": "温度设定",
+        "section_temp_desc": "设置当前设定温度与目标设定温度。",
+        "section_weather": "室外温度",
+        "section_weather_desc": "高级 COP 模式下用于修正冷却效率。",
+        "section_baseline": "基线 PUE",
+        "section_baseline_desc": "中级模式下用于描述当前设施的能效水平。",
+        "section_cop": "COP 与冷却参数",
+        "section_cop_desc": "高级模式下用于描述冷却系统效率、热负荷和辅助功耗。",
+        "annual_results_title": "计算结果",
+        "annual_results_desc": "结果按全年 24×365 小时运行估算，突出调温前后长期能耗与电费变化。",
+        "optimization_effect": "调温效果",
+        "current_annual_energy": "调温前年电量消耗（kWh）",
+        "target_annual_energy": "调温后年电量消耗（kWh）",
+        "energy_saving_rate": "年电量节省率",
+        "current_annual_cost": "调温前年化电费（¥）",
+        "target_annual_cost": "调温后年化电费（¥）",
+        "annual_cost_saved_short": "年节省电费（¥）",
+        "current_total_power": "调温前总功率（kW）",
+        "target_total_power": "调温后总功率（kW）",
+        "power_reduction_rate": "总功率下降率",
+        "current_pue": "调温前 PUE / 总能耗系数",
+        "target_pue": "调温后 PUE / 总能耗系数",
+        "pue_reduction_rate": "PUE 降低比例",
+    },
+    "en": {
+        "section_temp": "Temperature Setpoints",
+        "section_temp_desc": "Set the current and target temperature setpoints.",
+        "section_weather": "Outdoor Temperature",
+        "section_weather_desc": "Used in Advanced COP mode to correct cooling efficiency.",
+        "section_baseline": "Baseline PUE",
+        "section_baseline_desc": "Used in Standard mode to describe current facility efficiency.",
+        "section_cop": "COP & Cooling Parameters",
+        "section_cop_desc": "Used in Advanced mode to describe cooling efficiency, heat load, and auxiliary load.",
+        "annual_results_title": "Calculation Results",
+        "annual_results_desc": "Results are annualized based on 24×365 operation, highlighting long-term energy and cost changes before and after temperature adjustment.",
+        "optimization_effect": "Optimization Effect",
+        "current_annual_energy": "Annual Energy Before Adjustment (kWh)",
+        "target_annual_energy": "Annual Energy After Adjustment (kWh)",
+        "energy_saving_rate": "Annual Energy Saving Rate",
+        "current_annual_cost": "Annualized Cost Before Adjustment (¥)",
+        "target_annual_cost": "Annualized Cost After Adjustment (¥)",
+        "annual_cost_saved_short": "Annual Cost Saving (¥)",
+        "current_total_power": "Total Power Before Adjustment (kW)",
+        "target_total_power": "Total Power After Adjustment (kW)",
+        "power_reduction_rate": "Total Power Reduction Rate",
+        "current_pue": "PUE / Total Energy Factor Before Adjustment",
+        "target_pue": "PUE / Total Energy Factor After Adjustment",
+        "pue_reduction_rate": "PUE Reduction",
+    },
+}
+
+
 def get_text(lang="zh"):
-    return TEXT.get(lang, TEXT["zh"])
+    base = TEXT.get(lang, TEXT["zh"]).copy()
+    base.update(EXTRA_TEXT.get(lang, EXTRA_TEXT["zh"]))
+    return base
